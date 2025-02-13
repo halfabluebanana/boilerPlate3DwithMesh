@@ -1,0 +1,8 @@
+import { SphereGeometry, MeshPhongMaterial, Mesh} from 'three'
+
+export const addPlanet3 = (color, radius) => {
+    const geometry = new SphereGeometry(radius, 20, 20)
+    const material = new MeshPhongMaterial({color: color})
+    const mesh = new Mesh(geometry, material)
+    return mesh
+}

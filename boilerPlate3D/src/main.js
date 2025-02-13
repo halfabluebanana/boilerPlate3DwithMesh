@@ -1,9 +1,17 @@
 import './style.css'
 import * as THREE from 'three' 
-import {addBoilerPlateMeshes, addStandardMesh} from './addDefaultMeshes'
+import {
+	addBoilerPlateMeshes,
+	addStandardMesh,
+	addTexturedMesh,
+	addSphere2Mesh,
+} from './addDefaultMeshes'
 import {addLight} from './addDefaultLights'
+import Model from './Model'
 
 const renderer  = new THREE.WebGLRenderer({antialias:true})
+const clock = new THREE.Clock()
+const mixers = []
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
 
@@ -14,45 +22,106 @@ const scene = new THREE.Scene()
 
 init()
 function init(){
-  // set up our renderer default settings, aka where we render our scene to on our website
-  renderer.setSize(window.innerWidth, window.innerHeight)
-  document.body.appendChild(renderer.domElement)
+	console.log('Starting initialization...');
+	
+	renderer.setSize(window.innerWidth, window.innerHeight)
+	document.body.appendChild(renderer.domElement)
+	console.log('Renderer initialized');
 
-  //add meshes to our meshes object
-  meshes.default = addBoilerPlateMeshes()
-  meshes.standard = addStandardMesh()
+	//add meshes to our meshes object
+	try {
+		meshes.default = addBoilerPlateMeshes()
+		console.log('Added default meshes');
+		
+		meshes.standard = addStandardMesh()
+		console.log('Added standard mesh');
+		
+		meshes.physical = addTexturedMesh()
+		console.log('Added physical mesh');
+		
+		meshes.sphere2 = addSphere2Mesh()
+		console.log('Added sphere2 mesh');
+		
+		//add lights to our lights object
+		lights.default = addLight()
+		console.log('Added lights');
 
-  //add lights to our lights object
-  lights.default = addLight()
+		//add meshes to our scene
+		scene.add(lights.default)
+		scene.add(meshes.default)
+		scene.add(meshes.standard)
+		scene.add(meshes.physical)
+		scene.add(meshes.sphere2)
+    meshes.physical.position.set(-2, 2, 0)
+		console.log('Added all objects to scene');
 
-  //add meshes to our scene
-  scene.add(lights.default)
-  scene.add(meshes.default)
-  scene.add(meshes.standard)
+	} catch (error) {
+		console.error('Error during initialization:', error);
+	}
 
-
-  camera.position.set(0, 0, 5);
-  resize();
-  animate();
+	camera.position.set(0, 0, 5);
+	//console.log('Camera positioned');
+  instances();
+	
+	resize();
+	animate();
+	//console.log('Initialization complete');
 }
 
+function instances(){
+   console.log('Starting to create flower instance...');
+   const flower = new Model({
+    name: 'flower',
+    meshes: meshes.flower,
+    url: './models/flower.glb',  // Changed from '/models/flower.glb'
+    scale: new THREE.Vector3(2, 2, 2),
+    position: new THREE.Vector3(0, -0.5, 3),
+    scene: scene,
+    mixers: mixers,
+    callback: (model) => {
+        console.log('Flower model loaded, adding to scene...');
+        scene.add(model);
+        console.log('Flower added to scene');
+    }
+   });
+   
+   console.log('Initializing flower model...');
+   flower.init();
+}
+   
 function resize(){
-  window.addEventListener('resize', () =>{
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-  })
+	window.addEventListener('resize', () =>{
+		renderer.setSize(window.innerWidth, window.innerHeight)
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+	})
 }
 function animate(){
-  requestAnimationFrame(animate)
-  renderer.render(scene,camera)
+	const tick = clock.getElapsedTime()
+  const delta = clock.getDelta()
 
-  meshes.default.rotation.x += 0.01
-  meshes.default.rotation.y -= 0.01
-  meshes.default.rotation.z += 0.01
+	requestAnimationFrame(animate)
+//play our animation mixers
+for (const mixer of mixers) {
+  mixer.update(delta)
+}
 
-  meshes.default.rotation.x += 0.01
-  meshes.default.rotation.y -= 0.01
-  meshes.default.rotation.z += 0.01
+	renderer.render(scene,camera)
+
+	meshes.physical.rotation.x = tick * 0.5
+	meshes.physical.rotation.y = tick * 0.3
+	meshes.physical.rotation.z = tick * 0.2
+
+	meshes.default.rotation.x = tick * 0.5
+	meshes.default.rotation.y = tick * 0.3
+	meshes.default.rotation.z = tick * 0.2
+
+	meshes.standard.rotation.x = tick * 0.5
+	meshes.standard.rotation.y = tick * 0.3
+	meshes.standard.rotation.z = tick * 0.2
+
+	meshes.sphere2.rotation.x = tick * 0.4
+	meshes.sphere2.rotation.y = tick * 0.2
+	meshes.sphere2.rotation.z = tick * 0.3
 }
 

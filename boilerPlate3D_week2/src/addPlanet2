@@ -1,0 +1,10 @@
+import {SphereGeometry, MeshBasicMaterial, Mesh} from 'three'
+
+export const addPlanet2 = (color, radius) => {
+    // (radius, width segments, height segments)
+    const geometry = new SphereGeometry(radius, 6, 6)
+    const material = new MeshBasicMaterial({color: color})
+    const mesh = new Mesh(geometry, material)
+    return mesh
+}
+
