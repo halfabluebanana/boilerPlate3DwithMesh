@@ -4,6 +4,7 @@ import {
 	addBoilerPlateMeshes,
 	addStandardMesh,
 	addTexturedMesh,
+	addSphereMesh,
 	addSphere2Mesh,
 } from './addDefaultMeshes'
 import {addLight} from './addDefaultLights'
@@ -38,6 +39,9 @@ function init(){
 		
 		meshes.physical = addTexturedMesh()
 		console.log('Added physical mesh');
+
+		meshes.sphere = addSphereMesh()
+		console.log('Added sphere2 mesh');
 		
 		meshes.sphere2 = addSphere2Mesh()
 		console.log('Added sphere2 mesh');
@@ -51,8 +55,9 @@ function init(){
 		scene.add(meshes.default)
 		scene.add(meshes.standard)
 		scene.add(meshes.physical)
+		scene.add(meshes.sphere)
 		scene.add(meshes.sphere2)
-    meshes.physical.position.set(-2, 2, 0)
+    	meshes.physical.position.set(-2, 2, 0)
 		console.log('Added all objects to scene');
 
 	} catch (error) {
@@ -73,11 +78,12 @@ function instances(){
    const flower = new Model({
     name: 'flower',
     meshes: meshes.flower,
-    url: '/models/flower.glb',
+    url: '/flowers.glb',
     scale: new THREE.Vector3(2, 2, 2),
     position: new THREE.Vector3(0, -0.5, 3),
     scene: scene,
     mixers: mixers,
+	replace: true,
     callback: (model) => {
         console.log('Flower model loaded, adding to scene...');
         scene.add(model);

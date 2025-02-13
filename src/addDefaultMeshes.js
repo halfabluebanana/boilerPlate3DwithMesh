@@ -39,7 +39,7 @@ export const addTexturedMesh = () => {
         const color = loadTextureWithFallback('Ice_001_COLOR.jpg');
         const normal = loadTextureWithFallback('Ice_001_NRM.jpg');
         const height = loadTextureWithFallback('Ice_001_DISP.png');
-        const ao = loadTextureWithFallback('Ice_001_AO.jpg');
+        const ao = loadTextureWithFallback('Ice_001_OCC.jpg');
         
         const sphere = new SphereGeometry(0.5, 100, 100);
         console.log('Created ice sphere geometry');
@@ -84,6 +84,32 @@ export const addTexturedMesh = () => {
         return defaultMesh;
     }
 };
+
+export const addSphereMesh = () => {
+    const color = loadTextureWithFallback('Fabric_Lace_042_basecolor.png');
+        const normal = loadTextureWithFallback('Fabric_Lace_042_normal.png');
+        const height = loadTextureWithFallback('Fabric_Lace_042_height.png');
+        const roughness = loadTextureWithFallback('Fabric_Lace_042_roughness.png');
+        const ao = loadTextureWithFallback('Fabric_Lace_042_ambientOcclusion.png');
+        
+        const sphere = new SphereGeometry(0.3, 64, 64);
+        console.log('Created sphere2 geometry');
+        
+        const sphereMaterial = new MeshPhysicalMaterial({
+            map: color,
+            normalMap: normal,
+            displacementMap: height,
+            displacementScale: 0.05, // Adjust this value to control the height effect
+            roughnessMap: roughness,
+            aoMap: ao,
+            metalness: 0.0, // Lace isn't metallic
+            roughness: 0.8, // Base roughness for the lace
+            transmission: 0.1,
+            ior: 1.5,
+        });
+        const sphereMesh = new Mesh(sphere, sphereMaterial);
+        return sphereMesh;
+}
 
 export const addSphere2Mesh = () => {
     try {
